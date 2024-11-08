@@ -93,6 +93,7 @@ fun ClassroomList(classrooms: List<Classroom>) {
                                 fontSize = 18.sp
                             )
                             Text(text = "Teacher ID: ${classroom.teacherId}")
+                            Text(text = "Google Class ID: ${classroom.googleClassId}")
                             Text(text = "Description: ${classroom.description}")
                         }
                     }
@@ -110,6 +111,7 @@ fun CreateClassroomForm(
     var teacherId by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var googleClassId by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -150,6 +152,15 @@ fun CreateClassroomForm(
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(
+            value = googleClassId,
+            onValueChange = { googleClassId = it },
+            label = { Text("Google Class ID") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(
@@ -160,8 +171,8 @@ fun CreateClassroomForm(
                 Text("Cancel")
             }
             Button(onClick = {
-                if (teacherId.isNotBlank() && name.isNotBlank() && description.isNotBlank()) {
-                    onCreateClassroom(Classroom(teacherId, name, description))
+                if (teacherId.isNotBlank() && name.isNotBlank() && description.isNotBlank() && googleClassId.isNotBlank()) {
+                    onCreateClassroom(Classroom(teacherId, name, description, googleClassId))
                 }
             }) {
                 Text("Create")
@@ -173,7 +184,8 @@ fun CreateClassroomForm(
 data class Classroom(
     val teacherId: String,
     val name: String,
-    val description: String
+    val description: String,
+    val googleClassId: String
 )
 
 @Preview(showBackground = true)
