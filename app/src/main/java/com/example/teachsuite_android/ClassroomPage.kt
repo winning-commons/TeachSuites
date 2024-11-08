@@ -1,8 +1,11 @@
 package com.example.teachsuite_android
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable // Add this
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable // Add this
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,11 +14,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext // Add this
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
+import kotlinx.parcelize.Parcelize // Add this
+
+
 
 class ClassroomPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +39,7 @@ class ClassroomPage : ComponentActivity() {
 fun ClassroomScreen() {
     var classrooms by remember { mutableStateOf(listOf<Classroom>()) }
     var isCreatingClassroom by remember { mutableStateOf(false) }
+    val context = LocalContext.current  // Add this
 
     Scaffold(
         floatingActionButton = {
@@ -50,14 +58,24 @@ fun ClassroomScreen() {
                     onCancel = { isCreatingClassroom = false }
                 )
             } else {
-                ClassroomList(classrooms = classrooms)
+                ClassroomList(
+                    classrooms = classrooms,
+                    onClassroomClick = { classroom ->  // Add this handler
+                        val intent = Intent(context, ClassroomDetailActivity::class.java)
+                        intent.putExtra("classroom", classroom)
+                        context.startActivity(intent)
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun ClassroomList(classrooms: List<Classroom>) {
+fun ClassroomList(
+    classrooms: List<Classroom>,
+    onClassroomClick: (Classroom) -> Unit = {}  // Add this parameter
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -82,7 +100,8 @@ fun ClassroomList(classrooms: List<Classroom>) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp),
+                            .padding(vertical = 8.dp)
+                            .clickable { onClassroomClick(classroom) },  // Add this modifier
                         shape = RoundedCornerShape(8.dp),
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {
