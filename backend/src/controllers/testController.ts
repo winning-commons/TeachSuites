@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 
 export const sayHello = (req: Request, res: Response): void => {
-  res.send('Hello, world!');
+  res.send("Hello, world!");
 };

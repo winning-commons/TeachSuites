@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { gradeSAInput } from '../controllers/gradeSAController';
+import { Router } from "express";
+import { gradeSA } from "../controllers/gradeSAController";
 
 const router = Router();
 
-router.post('/', gradeSAInput);
+router.post("/", gradeSA);
 
 export default router;
