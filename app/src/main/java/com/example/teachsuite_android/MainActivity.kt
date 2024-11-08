@@ -1,5 +1,6 @@
 package com.example.teachsuite_android
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,12 +18,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,12 +34,19 @@ class MainActivity : ComponentActivity() {
         setContent {
             TeachSuite_androidTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainContent(modifier = Modifier.padding(innerPadding))
+                    val context = LocalContext.current
+                    MainContent(
+                        modifier = Modifier.padding(innerPadding),
+                        onExamBuilderClick = {
+                            context.startActivity(Intent(context, CreateQuestion::class.java))
+                        }
+                    )
                 }
             }
         }
     }
 }
+
 
 enum class Screen {
     START,
@@ -50,7 +60,10 @@ enum class UserRole {
 }
 
 @Composable
-fun MainContent(modifier: Modifier = Modifier) {
+fun MainContent(
+    modifier: Modifier = Modifier,
+    onExamBuilderClick: () -> Unit  // Add this parameter
+) {
     var currentScreen by remember { mutableStateOf(Screen.START) }
     var selectedRole by remember { mutableStateOf<UserRole?>(null) }
 
@@ -64,10 +77,12 @@ fun MainContent(modifier: Modifier = Modifier) {
                 if (role == UserRole.TEACHER) {
                     currentScreen = Screen.TEACHER_DASHBOARD
                 }
-                // Handle student role separately
             }
         )
-        Screen.TEACHER_DASHBOARD -> TeacherDashboard()
+        Screen.TEACHER_DASHBOARD -> TeacherDashboard(
+            onExamBuilderClick = onExamBuilderClick,  // Pass through the click handler
+            onClassroomsClick = { /* Handle classrooms click */ }
+        )
     }
 }
 

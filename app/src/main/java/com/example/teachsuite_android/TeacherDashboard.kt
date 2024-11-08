@@ -1,5 +1,6 @@
 package com.example.teachsuite_android
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -19,7 +21,7 @@ import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
 @Composable
 fun TeacherDashboard(
     onClassroomsClick: () -> Unit = {},
-    onExamBuilderClick: () -> Unit = {}
+    onExamBuilderClick: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -94,7 +96,6 @@ fun TeacherDashboard(
         }
     }
 }
-
 @Composable
 fun DashboardCard(
     title: String,
@@ -105,7 +106,7 @@ fun DashboardCard(
 ) {
     Card(
         modifier = modifier
-            .height(200.dp)
+            .height(250.dp)
             .padding(4.dp),
         shape = RoundedCornerShape(16.dp),
         onClick = onClick
@@ -114,7 +115,7 @@ fun DashboardCard(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally,  // This ensures horizontal centering
             verticalArrangement = Arrangement.Center
         ) {
             Icon(
@@ -129,7 +130,8 @@ fun DashboardCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center  // Add this
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -138,7 +140,7 @@ fun DashboardCard(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = TextAlign.Center  // Make sure this is here
             )
         }
     }
