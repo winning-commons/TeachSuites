@@ -40,7 +40,8 @@ class MainActivity : ComponentActivity() {
 
 enum class Screen {
     START,
-    ROLE_SELECTION
+    ROLE_SELECTION,
+    TEACHER_DASHBOARD
 }
 
 enum class UserRole {
@@ -60,9 +61,13 @@ fun MainContent(modifier: Modifier = Modifier) {
         Screen.ROLE_SELECTION -> RoleSelectionPage(
             onRoleSelected = { role ->
                 selectedRole = role
-                // Handle role selection here
+                if (role == UserRole.TEACHER) {
+                    currentScreen = Screen.TEACHER_DASHBOARD
+                }
+                // Handle student role separately
             }
         )
+        Screen.TEACHER_DASHBOARD -> TeacherDashboard()
     }
 }
 
