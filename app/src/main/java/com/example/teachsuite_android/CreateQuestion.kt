@@ -25,6 +25,7 @@ class CreateQuestion : ComponentActivity() {
                     CreateQuestionScreen(
                         modifier = Modifier.padding(innerPadding),
                         onStartQuestionCreation = {
+                            // Start QuestionCreationActivity when button is clicked
                             startActivity(Intent(this, QuestionCreationActivity::class.java))
                         }
                     )

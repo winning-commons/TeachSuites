@@ -29,6 +29,12 @@
         <activity
             android:name=".ClassroomPage"
             android:exported="false"/>
+        <activity
+            android:name=".QuestionCreationActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ClassroomDetailActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>

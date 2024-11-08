@@ -3,6 +3,7 @@ package com.example.teachsuite_android
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,6 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
 class ClassroomPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +60,10 @@ fun ClassroomScreen() {
 }
 
 @Composable
-fun ClassroomList(classrooms: List<Classroom>) {
+fun ClassroomList(
+    classrooms: List<Classroom>,
+    onClassroomClick: (Classroom) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -82,7 +88,8 @@ fun ClassroomList(classrooms: List<Classroom>) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp),
+                            .padding(vertical = 8.dp)
+                            .clickable { onClassroomClick(classroom) },
                         shape = RoundedCornerShape(8.dp),
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {
@@ -181,12 +188,13 @@ fun CreateClassroomForm(
     }
 }
 
+@Parcelize
 data class Classroom(
     val teacherId: String,
     val name: String,
     val description: String,
     val googleClassId: String
-)
+) : Parcelable
 
 @Preview(showBackground = true)
 @Composable
