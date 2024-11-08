@@ -1,37 +1,39 @@
 package com.example.teachsuite_android
 
+import androidx.compose.ui.tooling.preview.Preview
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
-
 
 class CreateQuestion : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TeachSuite_androidTheme {
-                CreateQuestionScreen(
-                    onShortResponseClick = {
-                        startActivity(Intent(this, ShortResponseActivity::class.java))
-                    },
-                    onMultipleChoiceClick = {
-                        startActivity(Intent(this, MultipleChoiceActivity::class.java))
-                    }
-                )
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
+                    CreateQuestionScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        onShortResponseClick = {
+                            startActivity(Intent(this, ShortResponseActivity::class.java))
+                        },
+                        onMultipleChoiceClick = {
+                            startActivity(Intent(this, MultipleChoiceActivity::class.java))
+                        }
+                    )
+                }
             }
         }
     }
@@ -43,63 +45,70 @@ fun CreateQuestionScreen(
     onShortResponseClick: () -> Unit,
     onMultipleChoiceClick: () -> Unit
 ) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
+        // Top section with title
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            modifier = Modifier.padding(top = 48.dp)
         ) {
-            // Title Section
             Text(
                 text = "Create a Question",
-                fontSize = 24.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
+                color = MaterialTheme.colorScheme.primary
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Choose the type of question you want to create",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
+        }
 
-            // Card for Short Response
-            Card(
+        // Middle section with options
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(vertical = 32.dp)
+        ) {
+            Button(
+                onClick = onShortResponseClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
-                elevation = CardDefaults.cardElevation(4.dp),
-                onClick = onShortResponseClick
+                    .height(50.dp),
+                shape = RoundedCornerShape(25.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Create Short Response Question",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                Text("Create Short Response")
             }
 
-            // Card for Multiple Choice
-            Card(
+            OutlinedButton(
+                onClick = onMultipleChoiceClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
-                elevation = CardDefaults.cardElevation(4.dp),
-                onClick = onMultipleChoiceClick
+                    .height(50.dp),
+                shape = RoundedCornerShape(25.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Create Multiple Choice Question",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                Text("Create Multiple Choice")
             }
+        }
+
+        // Bottom section with a note or additional info
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(bottom = 32.dp)
+        ) {
+            Text(
+                text = "Start building engaging questions now!",
+                fontSize = 14.sp,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
         }
     }
 }
