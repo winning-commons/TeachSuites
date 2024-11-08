@@ -26,6 +26,9 @@
         <activity
             android:name=".CreateQuestion"
             android:exported="false"/>
+        <activity
+            android:name=".ClassroomPage"
+            android:exported="false"/>
     </application>
 
 </manifest>

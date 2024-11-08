@@ -39,6 +39,9 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                         onExamBuilderClick = {
                             context.startActivity(Intent(context, CreateQuestion::class.java))
+                        },
+                        onClassroomsClick = {
+                            context.startActivity(Intent(context, ClassroomPage::class.java))
                         }
                     )
                 }
@@ -62,7 +65,8 @@ enum class UserRole {
 @Composable
 fun MainContent(
     modifier: Modifier = Modifier,
-    onExamBuilderClick: () -> Unit  // Add this parameter
+    onExamBuilderClick: () -> Unit,
+    onClassroomsClick: () -> Unit
 ) {
     var currentScreen by remember { mutableStateOf(Screen.START) }
     var selectedRole by remember { mutableStateOf<UserRole?>(null) }
@@ -80,12 +84,11 @@ fun MainContent(
             }
         )
         Screen.TEACHER_DASHBOARD -> TeacherDashboard(
-            onExamBuilderClick = onExamBuilderClick,  // Pass through the click handler
-            onClassroomsClick = { /* Handle classrooms click */ }
+            onExamBuilderClick = onExamBuilderClick,
+            onClassroomsClick = onClassroomsClick  // Pass through the classrooms click handler
         )
     }
 }
-
 @Composable
 fun StartPage(onGetStartedClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
