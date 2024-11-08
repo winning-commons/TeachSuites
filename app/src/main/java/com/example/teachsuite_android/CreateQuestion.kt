@@ -43,13 +43,14 @@ fun CreateQuestionScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Top section with title
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(top = 48.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 48.dp)
         ) {
             Text(
                 text = "Create a Question",
@@ -64,14 +65,15 @@ fun CreateQuestionScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // Add space between title and button
+        Spacer(modifier = Modifier.height(100.dp)) // Adjust this value to position the button higher or lower
 
-        // Middle section with button to start question creation
+        // Button positioned closer to the top
         Button(
             onClick = onStartQuestionCreation,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .fillMaxWidth(0.8f) // Adjust button width to 80% of the screen
+                .height(50.dp), // Fixed height for the button
             shape = RoundedCornerShape(25.dp)
         ) {
             Text("Start Creating Questions")
