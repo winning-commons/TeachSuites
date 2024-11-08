@@ -17,47 +17,55 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
 
-class ClassroomPage : ComponentActivity() {
+class StudentPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TeachSuite_androidTheme {
-                ClassroomScreen()
+                StudentScreen(
+                    classrooms = listOf(
+                        Classroom("teacher1", "Math", "Basic Math Class", "1234"),
+                        Classroom("teacher2", "Science", "Intro to Science", "5678")
+                    )
+                )
             }
         }
     }
 }
 
 @Composable
-fun ClassroomScreen() {
-    var classrooms by remember { mutableStateOf(listOf<Classroom>()) }
-    var isCreatingClassroom by remember { mutableStateOf(false) }
+fun StudentScreen(classrooms: List<Classroom>) {
+    var enrolledClasses by remember { mutableStateOf(listOf<Classroom>()) }
+    var isAddingClass by remember { mutableStateOf(false) }
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { isCreatingClassroom = true }) {
+            FloatingActionButton(onClick = { isAddingClass = true }) {
                 Text("+")
             }
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            if (isCreatingClassroom) {
-                CreateClassroomForm(
-                    onCreateClassroom = { newClassroom ->
-                        classrooms = classrooms + newClassroom
-                        isCreatingClassroom = false
+            if (isAddingClass) {
+                AddClassForm(
+                    classrooms = classrooms,
+                    onAddClass = { newClass ->
+                        if (!enrolledClasses.contains(newClass)) {
+                            enrolledClasses = enrolledClasses + newClass
+                        }
+                        isAddingClass = false
                     },
-                    onCancel = { isCreatingClassroom = false }
+                    onCancel = { isAddingClass = false }
                 )
             } else {
-                ClassroomList(classrooms = classrooms)
+                EnrolledClassesList(enrolledClasses = enrolledClasses)
             }
         }
     }
 }
 
 @Composable
-fun ClassroomList(classrooms: List<Classroom>) {
+fun EnrolledClassesList(enrolledClasses: List<Classroom>) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -65,20 +73,20 @@ fun ClassroomList(classrooms: List<Classroom>) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Classrooms",
+            text = "Your Classes",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        if (classrooms.isEmpty()) {
+        if (enrolledClasses.isEmpty()) {
             Text(
-                text = "No classrooms available.",
+                text = "No classes joined.",
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
         } else {
             LazyColumn {
-                items(classrooms) { classroom ->
+                items(enrolledClasses) { classroom ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -104,14 +112,13 @@ fun ClassroomList(classrooms: List<Classroom>) {
 }
 
 @Composable
-fun CreateClassroomForm(
-    onCreateClassroom: (Classroom) -> Unit,
+fun AddClassForm(
+    classrooms: List<Classroom>,
+    onAddClass: (Classroom) -> Unit,
     onCancel: () -> Unit
 ) {
-    var teacherId by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var googleClassId by remember { mutableStateOf("") }
+    var googleClassIdInput by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -121,45 +128,26 @@ fun CreateClassroomForm(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Create a Classroom",
+            text = "Join a Class",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
         TextField(
-            value = teacherId,
-            onValueChange = { teacherId = it },
-            label = { Text("Teacher ID") },
+            value = googleClassIdInput,
+            onValueChange = { googleClassIdInput = it },
+            label = { Text("Enter Google Classroom ID") },
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Classroom Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Classroom Description") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(
-            value = googleClassId,
-            onValueChange = { googleClassId = it },
-            label = { Text("Google Class ID") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (errorMessage.isNotBlank()) {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -171,11 +159,15 @@ fun CreateClassroomForm(
                 Text("Cancel")
             }
             Button(onClick = {
-                if (teacherId.isNotBlank() && name.isNotBlank() && description.isNotBlank() && googleClassId.isNotBlank()) {
-                    onCreateClassroom(Classroom(teacherId, name, description, googleClassId))
+                val matchedClass = classrooms.find { it.googleClassId == googleClassIdInput }
+                if (matchedClass != null) {
+                    onAddClass(matchedClass)
+                    errorMessage = ""
+                } else {
+                    errorMessage = "Class not found. Please check the ID."
                 }
             }) {
-                Text("Create")
+                Text("Join Class")
             }
         }
     }
@@ -183,8 +175,13 @@ fun CreateClassroomForm(
 
 @Preview(showBackground = true)
 @Composable
-fun ClassroomScreenPreview() {
+fun StudentScreenPreview() {
     TeachSuite_androidTheme {
-        ClassroomScreen()
+        StudentScreen(
+            classrooms = listOf(
+                Classroom("teacher1", "Math", "Basic Math Class", "1234"),
+                Classroom("teacher2", "Science", "Intro to Science", "5678")
+            )
+        )
     }
 }
