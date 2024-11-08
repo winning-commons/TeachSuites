@@ -1,6 +1,6 @@
 import requests
 
-url = "http://localhost:3000"
+url = "http://108.30.159.119:8443"
 
 
 def testCreateClass():
