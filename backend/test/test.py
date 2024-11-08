@@ -4,8 +4,8 @@ url = "http://108.30.159.119:8443"
 
 
 def testCreateClass():
-    class_id = "1234"
-    class_name = "Test Class"
+    class_id = "12345"
+    class_name = "Test Class 2"
     class_description = "This is a test class"
     teacher_id = "91234790-8f47-11e9-bc42-526af7764f64"  # Use the known UUID
 
@@ -29,4 +29,15 @@ def testGetClasses():
     print(response.json())
 
 
+def testCreateMC():
+    endpoint = url + "/create-mc"
+    body = {
+        "sa-topic": "France",
+    }
+    response = requests.post(endpoint, json=body)
+    print(response)
+
+
 testGetClasses()
+# testCreateClass()
+# testCreateMC()

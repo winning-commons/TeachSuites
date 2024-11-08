@@ -39,6 +39,8 @@ export const getClasses = async (
 
     res.json(result.rows); // Return all classrooms associated with the teacher_id
   } catch (error) {
+    console.log("Database password:", process.env.DB_PASSWORD);
+
     console.error("Error fetching data from the database:", error);
     res.status(500).json({ error: "Failed to retrieve classrooms" });
   }
