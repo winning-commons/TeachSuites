@@ -9,7 +9,7 @@ import { getClasses } from "./controllers/getClassesController";
 dotenv.config();
 
 const app: Application = express();
-const PORT = process.env.PORT || 8443;
+const PORT = 8443;
 
 app.use(express.json());
 
