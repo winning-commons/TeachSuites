@@ -70,6 +70,7 @@ fun MainContent(
 ) {
     var currentScreen by remember { mutableStateOf(Screen.START) }
     var selectedRole by remember { mutableStateOf<UserRole?>(null) }
+    val context = LocalContext.current  // Add this
 
     when (currentScreen) {
         Screen.START -> StartPage(
@@ -78,14 +79,18 @@ fun MainContent(
         Screen.ROLE_SELECTION -> RoleSelectionPage(
             onRoleSelected = { role ->
                 selectedRole = role
-                if (role == UserRole.TEACHER) {
-                    currentScreen = Screen.TEACHER_DASHBOARD
+                when (role) {
+                    UserRole.TEACHER -> currentScreen = Screen.TEACHER_DASHBOARD
+                    UserRole.STUDENT -> {
+                        // Navigate to StudentPage
+                        context.startActivity(Intent(context, StudentPage::class.java))
+                    }
                 }
             }
         )
         Screen.TEACHER_DASHBOARD -> TeacherDashboard(
             onExamBuilderClick = onExamBuilderClick,
-            onClassroomsClick = onClassroomsClick  // Pass through the classrooms click handler
+            onClassroomsClick = onClassroomsClick
         )
     }
 }

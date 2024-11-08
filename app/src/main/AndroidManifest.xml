@@ -35,6 +35,9 @@
         <activity
             android:name=".ClassroomDetailActivity"
             android:exported="false"/>
+        <activity
+            android:name=".StudentPage"
+            android:exported="false"/>
     </application>
 
 </manifest>
