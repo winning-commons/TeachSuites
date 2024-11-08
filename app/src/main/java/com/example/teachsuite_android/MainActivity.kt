@@ -4,22 +4,25 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material3.Icon
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,20 +30,44 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TeachSuite_androidTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                ) { innerPadding ->
-                    StartPage(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    MainContent(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
     }
 }
 
+enum class Screen {
+    START,
+    ROLE_SELECTION
+}
+
+enum class UserRole {
+    TEACHER,
+    STUDENT
+}
+
 @Composable
-fun StartPage(modifier: Modifier = Modifier) {
+fun MainContent(modifier: Modifier = Modifier) {
+    var currentScreen by remember { mutableStateOf(Screen.START) }
+    var selectedRole by remember { mutableStateOf<UserRole?>(null) }
+
+    when (currentScreen) {
+        Screen.START -> StartPage(
+            onGetStartedClick = { currentScreen = Screen.ROLE_SELECTION }
+        )
+        Screen.ROLE_SELECTION -> RoleSelectionPage(
+            onRoleSelected = { role ->
+                selectedRole = role
+                // Handle role selection here
+            }
+        )
+    }
+}
+
+@Composable
+fun StartPage(onGetStartedClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -54,7 +81,7 @@ fun StartPage(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(top = 48.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.School,
+                imageVector = Icons.Default.AutoStories,
                 contentDescription = "TeachSuites Logo",
                 modifier = Modifier.size(80.dp),
                 tint = MaterialTheme.colorScheme.primary
@@ -104,26 +131,122 @@ fun StartPage(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(bottom = 32.dp)
         ) {
             Button(
-                onClick = { /* Handle login */ },
+                onClick = onGetStartedClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = RoundedCornerShape(25.dp)
             ) {
-                Text("Sign in with Google")
+                Text("Get Started")
             }
+        }
+    }
+}
 
-            Spacer(modifier = Modifier.height(16.dp))
+@Composable
+fun RoleSelectionPage(onRoleSelected: (UserRole) -> Unit, modifier: Modifier = Modifier) {
+    var selectedRole by remember { mutableStateOf<UserRole?>(null) }
 
-            OutlinedButton(
-                onClick = { /* Handle about */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(25.dp)
-            ) {
-                Text("Learn More")
-            }
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "I am a...",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            RoleOption(
+                role = UserRole.TEACHER,
+                icon = Icons.Default.School,
+                isSelected = selectedRole == UserRole.TEACHER,
+                onSelect = { selectedRole = UserRole.TEACHER }
+            )
+
+            RoleOption(
+                role = UserRole.STUDENT,
+                icon = Icons.Default.Person,
+                isSelected = selectedRole == UserRole.STUDENT,
+                onSelect = { selectedRole = UserRole.STUDENT }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = { selectedRole?.let(onRoleSelected) },
+            enabled = selectedRole != null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(25.dp)
+        ) {
+            Text("Continue")
+        }
+    }
+}
+
+@Composable
+fun RoleOption(
+    role: UserRole,
+    icon: ImageVector,
+    isSelected: Boolean,
+    onSelect: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .size(140.dp)
+            .clickable(onClick = onSelect)
+            .border(
+                width = if (isSelected) 2.dp else 0.dp,
+                color = if (isSelected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.surface,
+                shape = MaterialTheme.shapes.medium
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected)
+                MaterialTheme.colorScheme.primaryContainer
+            else
+                MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = role.name,
+                modifier = Modifier.size(48.dp),
+                tint = if (isSelected)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = role.name.lowercase().capitalize(),
+                style = MaterialTheme.typography.titleMedium,
+                color = if (isSelected)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }
@@ -154,6 +277,14 @@ fun FeatureItem(title: String, description: String) {
 @Composable
 fun StartPagePreview() {
     TeachSuite_androidTheme {
-        StartPage()
+        StartPage(onGetStartedClick = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RoleSelectionPreview() {
+    TeachSuite_androidTheme {
+        RoleSelectionPage(onRoleSelected = {})
     }
 }
