@@ -7,6 +7,8 @@ import makeClass from "./routes/makeClass";
 
 import { getClasses } from "./controllers/getClassesController";
 import getStudentClasses from "./routes/getStudentClasses";
+import { getExams } from "./controllers/getExamsController";
+import getExamQs from "./routes/getExamQs";
 
 dotenv.config();
 
@@ -21,7 +23,10 @@ app.use("/api/create-mc", createMC);
 app.use("/api/get-classes", getClasses);
 app.use("/api/make-class", makeClass);
 app.use("/api/get-student-classes", getStudentClasses);
+app.use("/api/get-exams", getExams);
+app.use("/api/get-exam-qs", getExamQs);
+
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
