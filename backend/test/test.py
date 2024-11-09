@@ -46,7 +46,25 @@ def testGetStudentClasses():
     print(response.json())
 
 
-testGetStudentClasses()
+def testGetExams():
+    student_id = "b1f19de4-8ba4-45b8-b748-cd0e6509a44a"
+    endpoint = url + "/api/get-exams"
+    body = {"student-id": student_id}
+    response = requests.post(endpoint, json=body)
+    print(response.json())
+
+
+def testGetQs():
+    exam_id = "f02490c6-e276-47c3-88ed-233451850762"
+    endpoint = url + "/api/get-exam-qs"
+    body = {"exam-id": exam_id}
+    response = requests.post(endpoint, json=body)
+    print(response.json())
+
+
+# testGetStudentClasses()
+# testGetExams()
+testGetQs()
 # testGetClasses()
 # testCreateClass()
 # testCreateMC()
