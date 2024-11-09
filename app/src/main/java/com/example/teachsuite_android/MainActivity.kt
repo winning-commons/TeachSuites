@@ -48,7 +48,10 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     onExamBuilderClick = {
-                        // Handle exam builder click if needed
+                        val intent = Intent(this@MainActivity, CreateQuestion::class.java)
+//                        intent.putParcelableArrayListExtra("classrooms", ArrayList(classrooms))  // Pass classrooms as Parcelable ArrayList
+                        startActivity(intent)
+//                        context.startActivity(Intent(context, CreateQuestion::class.java))
                     }
                 )
             }
