@@ -38,6 +38,15 @@ def testCreateMC():
     print(response)
 
 
-testGetClasses()
+def testGetStudentClasses():
+    student_id = "b1f19de4-8ba4-45b8-b748-cd0e6509a44a"
+    endpoint = url + "/api/get-student-classes"
+    body = {"student-id": student_id}
+    response = requests.post(endpoint, json=body)
+    print(response.json())
+
+
+testGetStudentClasses()
+# testGetClasses()
 # testCreateClass()
 # testCreateMC()
