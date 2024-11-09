@@ -62,9 +62,20 @@ def testGetQs():
     print(response.json())
 
 
+def testGradeSA():
+    sainput = "they have long neck"
+    saquestion = "What is a giraffe?"
+    endpoint = url + "/api/grade-sa"
+    body = {"sa-input": sainput, "sa-question": saquestion}
+    response = requests.post(endpoint, json=body)
+    print(response.json())
+
+
+testGradeSA()
+
 # testGetStudentClasses()
 # testGetExams()
-testGetQs()
+# testGetQs()
 # testGetClasses()
 # testCreateClass()
 # testCreateMC()
