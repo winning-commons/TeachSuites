@@ -52,7 +52,7 @@ export const getExams = async (
     `;
     const examsResult = await pool.query(examsQuery, [classroomIds]);
 
-    res.json(examsResult.rows); // Return all exams associated with the classroom IDs
+    res.json(examsResult.rows); //  Return all exams associated with the classroom IDs
   } catch (error) {
     console.error("Error fetching exams from the database:", error);
     res.status(500).json({ error: "Failed to retrieve exams" });
