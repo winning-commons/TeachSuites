@@ -12,22 +12,28 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.teachsuite_android.com.example.teachsuite_android.fetchStudentClasses
 import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
+import kotlinx.coroutines.launch
 
 class StudentPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TeachSuite_androidTheme {
-                StudentScreen(
-                    classrooms = listOf(
-                        Classroom("teacher1", "Math", "Basic Math Class", "1234"),
-                        Classroom("teacher2", "Science", "Intro to Science", "5678")
-                    )
-                )
+                val studentId = "b1f19de4-8ba4-45b8-b748-cd0e6509a44a"
+                var classrooms by remember { mutableStateOf<List<Classroom>>(emptyList()) }
+                val coroutineScope = rememberCoroutineScope()
+
+                LaunchedEffect(Unit) {
+                    coroutineScope.launch {
+                        classrooms = fetchStudentClasses(studentId)
+                    }
+                }
+
+                StudentScreen(classrooms = classrooms)
             }
         }
     }
@@ -35,31 +41,15 @@ class StudentPage : ComponentActivity() {
 
 @Composable
 fun StudentScreen(classrooms: List<Classroom>) {
-    var enrolledClasses by remember { mutableStateOf(listOf<Classroom>()) }
-    var isAddingClass by remember { mutableStateOf(false) }
-
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { isAddingClass = true }) {
+            FloatingActionButton(onClick = { /* Add any additional actions here if needed */ }) {
                 Text("+")
             }
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            if (isAddingClass) {
-                AddClassForm(
-                    classrooms = classrooms,
-                    onAddClass = { newClass ->
-                        if (!enrolledClasses.contains(newClass)) {
-                            enrolledClasses = enrolledClasses + newClass
-                        }
-                        isAddingClass = false
-                    },
-                    onCancel = { isAddingClass = false }
-                )
-            } else {
-                EnrolledClassesList(enrolledClasses = enrolledClasses)
-            }
+            EnrolledClassesList(enrolledClasses = classrooms)
         }
     }
 }
@@ -108,80 +98,5 @@ fun EnrolledClassesList(enrolledClasses: List<Classroom>) {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun AddClassForm(
-    classrooms: List<Classroom>,
-    onAddClass: (Classroom) -> Unit,
-    onCancel: () -> Unit
-) {
-    var googleClassIdInput by remember { mutableStateOf("") }
-    var errorMessage by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Join a Class",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        TextField(
-            value = googleClassIdInput,
-            onValueChange = { googleClassIdInput = it },
-            label = { Text("Enter Google Classroom ID") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        if (errorMessage.isNotBlank()) {
-            Text(
-                text = errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(onClick = onCancel) {
-                Text("Cancel")
-            }
-            Button(onClick = {
-                val matchedClass = classrooms.find { it.googleClassId == googleClassIdInput }
-                if (matchedClass != null) {
-                    onAddClass(matchedClass)
-                    errorMessage = ""
-                } else {
-                    errorMessage = "Class not found. Please check the ID."
-                }
-            }) {
-                Text("Join Class")
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun StudentScreenPreview() {
-    TeachSuite_androidTheme {
-        StudentScreen(
-            classrooms = listOf(
-                Classroom("teacher1", "Math", "Basic Math Class", "1234"),
-                Classroom("teacher2", "Science", "Intro to Science", "5678")
-            )
-        )
     }
 }

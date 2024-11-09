@@ -1,5 +1,4 @@
 package com.example.teachsuite_android
-
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,17 +15,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.teachsuite_android.com.example.teachsuite_android.ApiResponse
+//import com.example.teachsuite_android.com.example.teachsuite_android.GradeExamsActivity
 import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
 
 class ClassroomDetailActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Retrieve the classroom data from intent
         val classroom = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            intent?.getParcelableExtra("classroom", Classroom::class.java)
+            intent?.getParcelableExtra("classroom", ApiResponse::class.java)
         } else {
             @Suppress("DEPRECATION")
-            intent?.getParcelableExtra("classroom")
+            intent?.getParcelableExtra<ApiResponse>("classroom")
         }
 
         setContent {
@@ -52,7 +55,8 @@ class ClassroomDetailActivity : ComponentActivity() {
                                 classroom = classroom,
                                 modifier = Modifier.padding(padding),
                                 onGiveExamClick = { /* Handle give exam */ },
-                                onGradeExamsClick = { /* Handle grade exams */ }
+                                onGradeExamsClick = { val intent = Intent(this, GradeExamsActivity::class.java)
+                                    startActivity(intent) }
                             )
                         }
                     }
@@ -64,7 +68,7 @@ class ClassroomDetailActivity : ComponentActivity() {
 
 @Composable
 fun ClassroomDetailContent(
-    classroom: Classroom,
+    classroom: ApiResponse,
     modifier: Modifier = Modifier,
     onGiveExamClick: () -> Unit,
     onGradeExamsClick: () -> Unit
@@ -91,7 +95,7 @@ fun ClassroomDetailContent(
                     fontWeight = FontWeight.Bold
                 )
                 Text(text = "Description: ${classroom.description}")
-                Text(text = "Google Class ID: ${classroom.googleClassId}")
+                Text(text = "Google Class ID: ${classroom.googleClassroomId}")
 
                 // Dummy data for now
                 Text(text = "Students: 25")
