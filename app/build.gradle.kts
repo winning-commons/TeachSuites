@@ -59,6 +59,9 @@ dependencies {
     // Add these if not already in your version catalog
     implementation("org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.0")
     implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
     // Existing test dependencies
     testImplementation(libs.junit)

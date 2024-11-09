@@ -1,11 +1,12 @@
+// ClassroomPage.kt
 package com.example.teachsuite_android
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable // Add this
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable // Add this
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,32 +15,41 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext // Add this
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
+import com.example.teachsuite_android.com.example.teachsuite_android.ApiResponse
+import com.example.teachsuite_android.com.example.teachsuite_android.fetchClassrooms
 import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
-import kotlinx.parcelize.Parcelize // Add this
-
-
+import kotlinx.coroutines.launch
 
 class ClassroomPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // State to hold the fetched classrooms list
+        val classroomsState = mutableStateOf<List<ApiResponse>>(emptyList())
+
+        // Launch a coroutine to fetch classrooms when the page loads
+        lifecycleScope.launch {
+            val classrooms = fetchClassrooms() // Calls the provided fetchClassrooms function
+            classroomsState.value = classrooms
+        }
+
         setContent {
             TeachSuite_androidTheme {
-                ClassroomScreen()
+                ClassroomScreen(classrooms = classroomsState.value)
             }
         }
     }
 }
 
 @Composable
-fun ClassroomScreen() {
-    var classrooms by remember { mutableStateOf(listOf<Classroom>()) }
+fun ClassroomScreen(classrooms: List<ApiResponse>) {
     var isCreatingClassroom by remember { mutableStateOf(false) }
-    val context = LocalContext.current  // Add this
+    val context = LocalContext.current
 
     Scaffold(
         floatingActionButton = {
@@ -52,7 +62,7 @@ fun ClassroomScreen() {
             if (isCreatingClassroom) {
                 CreateClassroomForm(
                     onCreateClassroom = { newClassroom ->
-                        classrooms = classrooms + newClassroom
+                        // Handle adding new classroom if necessary
                         isCreatingClassroom = false
                     },
                     onCancel = { isCreatingClassroom = false }
@@ -60,7 +70,7 @@ fun ClassroomScreen() {
             } else {
                 ClassroomList(
                     classrooms = classrooms,
-                    onClassroomClick = { classroom ->  // Add this handler
+                    onClassroomClick = { classroom ->
                         val intent = Intent(context, ClassroomDetailActivity::class.java)
                         intent.putExtra("classroom", classroom)
                         context.startActivity(intent)
@@ -73,8 +83,8 @@ fun ClassroomScreen() {
 
 @Composable
 fun ClassroomList(
-    classrooms: List<Classroom>,
-    onClassroomClick: (Classroom) -> Unit = {}  // Add this parameter
+    classrooms: List<ApiResponse>,
+    onClassroomClick: (ApiResponse) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -101,7 +111,7 @@ fun ClassroomList(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .clickable { onClassroomClick(classroom) },  // Add this modifier
+                            .clickable { onClassroomClick(classroom) },
                         shape = RoundedCornerShape(8.dp),
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {
@@ -113,7 +123,7 @@ fun ClassroomList(
                             )
                             Text(text = "Teacher ID: ${classroom.teacherId}")
                             Text(text = "Description: ${classroom.description}")
-                            Text(text = "Google Class ID: ${classroom.googleClassId}")
+                            Text(text = "Google Class ID: ${classroom.googleClassroomId}")
                         }
                     }
                 }
@@ -124,7 +134,7 @@ fun ClassroomList(
 
 @Composable
 fun CreateClassroomForm(
-    onCreateClassroom: (Classroom) -> Unit,
+    onCreateClassroom: (ApiResponse) -> Unit,
     onCancel: () -> Unit
 ) {
     var teacherId by remember { mutableStateOf("") }
@@ -191,19 +201,21 @@ fun CreateClassroomForm(
             }
             Button(onClick = {
                 if (teacherId.isNotBlank() && name.isNotBlank() && description.isNotBlank() && googleClassId.isNotBlank()) {
-                    onCreateClassroom(Classroom(teacherId, name, description, googleClassId))
+                    val newClassroom = ApiResponse(
+                        id = "Generated ID",
+                        teacherId = teacherId,
+                        name = name,
+                        googleClassroomId = googleClassId,
+                        description = description,
+                        isActive = true,
+                        createdAt = "Current Date",
+                        updatedAt = "Current Date"
+                    )
+                    onCreateClassroom(newClassroom)
                 }
             }) {
                 Text("Create")
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ClassroomScreenPreview() {
-    TeachSuite_androidTheme {
-        ClassroomScreen()
     }
 }

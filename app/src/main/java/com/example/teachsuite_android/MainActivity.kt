@@ -25,26 +25,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
-
+import com.example.teachsuite_android.com.example.teachsuite_android.fetchClassrooms
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.rememberCoroutineScope
+import com.example.teachsuite_android.ui.theme.TeachSuite_androidTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             TeachSuite_androidTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val context = LocalContext.current
-                    MainContent(
-                        modifier = Modifier.padding(innerPadding),
-                        onExamBuilderClick = {
-                            context.startActivity(Intent(context, CreateQuestion::class.java))
-                        },
-                        onClassroomsClick = {
-                            context.startActivity(Intent(context, ClassroomPage::class.java))
+                val coroutineScope = rememberCoroutineScope()
+
+                MainContent(
+                    onClassroomsClick = {
+                        coroutineScope.launch {
+                            val classrooms = fetchClassrooms()  // Fetch classrooms asynchronously
+                            val intent = Intent(this@MainActivity, ClassroomPage::class.java)
+                            intent.putParcelableArrayListExtra("classrooms", ArrayList(classrooms))  // Pass classrooms as Parcelable ArrayList
+                            startActivity(intent)
                         }
-                    )
-                }
+                    },
+                    onExamBuilderClick = {
+                        // Handle exam builder click if needed
+                    }
+                )
             }
         }
     }
